@@ -1,0 +1,8 @@
+falcon==1.4.1
+gunicorn==19.9.0
+pendulum==2.0.4
+python-dateutil==2.7.5
+python-mimeparse==1.6.0
+pytzdata==2018.7
+six==1.11.0
+toml==0.10.0
