@@ -1,7 +1,7 @@
 ## etcd-grafana
 A simplejson datasource for grafana to show etcd data.
 ## Usage
-1. install requirements;
+1. install requirements;g
 ```
 pip install -r requirements.txt
 ```

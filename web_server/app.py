@@ -2,8 +2,8 @@ import falcon
 import logging 
 import sys
 
-from web_server.config import set_config
-from web_server.log import setup_logging
+from web_server.utils.config import set_config
+from web_server.utils.log import setup_logging
 from web_server.images import Resource, Search, Query, Annotations, Tag_keys, Tag_values
 
 
@@ -17,7 +17,7 @@ log.debug("shall we begin")
 api= application = falcon.API()
 
 resource = Resource()
-search = Search()
+search = Search(config)
 query = Query()
 annotations = Annotations()
 tag_keys = Tag_keys()

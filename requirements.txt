@@ -1,8 +1,15 @@
+certifi==2018.11.29
+chardet==3.0.4
+dnspython==1.15.0
 falcon==1.4.1
 gunicorn==19.9.0
+idna==2.7
 pendulum==2.0.4
 python-dateutil==2.7.5
+python-etcd==0.4.5
 python-mimeparse==1.6.0
 pytzdata==2018.7
+requests==2.20.1
 six==1.11.0
 toml==0.10.0
+urllib3==1.24.1

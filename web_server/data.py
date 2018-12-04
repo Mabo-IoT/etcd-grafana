@@ -25,12 +25,14 @@ class GrafanaQuery:
         targets = [target['target'] for target in data['targets']]
         return cls(timeFrom, timeTo, targets)
 
-    @property
-    def etcd_sql(self) -> str:
+    def etcd_key(self, node_key:str, node_value:str) -> [str]:
         """
         generate etcd sql according to targets
         """
-        pass
+
+        keys = [node_key+'/'+target_node+node_value for target_node in self.targets]
+        
+        return keys
 
 
 class QueryResponse:
