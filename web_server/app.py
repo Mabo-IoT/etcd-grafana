@@ -18,7 +18,7 @@ api= application = falcon.API()
 
 resource = Resource()
 search = Search(config)
-query = Query()
+query = Query(config)
 annotations = Annotations()
 tag_keys = Tag_keys()
 tag_values = Tag_values() 

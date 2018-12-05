@@ -3,9 +3,9 @@ host = '127.0.0.1'
 port = 2379
 
 [app]
-node_prefix = "/nodes" # etcd key to monitor
-node_suffix = "/ziyan/status" # etcd key to caculate node status
-time_range = 30 # unit is minute
+node_prefix = "/nodes_name" # etcd key to monitor
+node_suffix = "" # etcd key to caculate node status
+time_range = 1800 # unit is second
 
 [logging]
 console = true

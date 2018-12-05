@@ -99,7 +99,7 @@ class Query:
   }
 ]
     """
-    def __inti__(self, conf:dict):
+    def __init__(self, conf:dict):
         self.etcd = EtcdWrapper(conf["etcd"])
         self.node_prefix = conf["app"]["node_prefix"]
         self.node_suffix = conf["app"]["node_suffix"]
@@ -116,20 +116,10 @@ class Query:
         data = json.loads(data)
         log.debug("Query request body is:\n {}".format(data))
         request = GrafanaQuery.generate_query(data)
+        log.debug(self.node_prefix)
+        responses = self.generate_response(request)
         
-        reponse = self.generate_response(request)
-        # responese = QueryResponse()
-        time = pendulum.now().int_timestamp
-        response = [
-            {   
-                "target": "node_1",
-                "datapoints":[
-                    [random.randint(0,1), time]
-                ]
-            },
-        ]
-        
-        resp.body = json.dumps(response)
+        resp.body = json.dumps(responses)
         resp.status = falcon.HTTP_200
     
     def generate_response(self, request:dict) -> list:
@@ -138,8 +128,8 @@ class Query:
         """
         etcd_keys = request.etcd_keys(self.node_prefix, self.node_suffix)
         etcd_results = [self.etcd.read(key) for key in etcd_keys]
-        query_responses = [QueryResponse(result["data"]) for result in etcd_results]
-        responses = [response.point for reponse in query_responses]
+        query_responses = [QueryResponse.generate_response(result) for result in etcd_results]
+        responses = [response.point(self.time_range) for response in query_responses]
         return responses
 
 class Annotations:

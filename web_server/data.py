@@ -1,10 +1,19 @@
 import logging
 import pendulum
+import json
 
+from etcd import EtcdResult
 from typing import Type, TypeVar
 
 T = TypeVar('T', bound='GrafanaQuery')
 S = TypeVar('S', bound='QueryResponse')
+
+INVALID:int = 2
+RUN:int = 1
+STOP:int = 0
+UNKNOWN:int = 3
+UNDEFINED:int = 4
+
 
 log = logging.getLogger(__name__)
 
@@ -25,7 +34,7 @@ class GrafanaQuery:
         targets = [target['target'] for target in data['targets']]
         return cls(timeFrom, timeTo, targets)
 
-    def etcd_key(self, node_key:str, node_value:str) -> [str]:
+    def etcd_keys(self, node_key:str, node_value:str) -> [str]:
         """
         generate etcd sql according to targets
         """
@@ -36,23 +45,55 @@ class GrafanaQuery:
 
 
 class QueryResponse:
-    def __init__(self):
-        pass
-    
+    def __init__(self, node_name:str, timestamp:int, data:dict):
+        self.node_name = node_name
+        self.timestamp = timestamp
+        self.data = data
+        
     @classmethod
-    def generate_response(cls:Type[S], data:dict) -> S:
+    def generate_response(cls:Type[S], data:EtcdResult) -> S:
         """
         generate response by etcd data
         """
-        pass
-    
-    @property
-    def json_data(self) -> dict:
+        data = json.loads(data.value)
+        
+        return cls(data["node"], data["time"], data["data"])
+        
+    def point(self, time_range:int=1800) -> dict:
         """
-        generate json data by response
+        generate point by response and time_range;
+        default time_range is 1800s;
+        time_range to confirm if data is valid
         """
-        pass
+        point = {
+            "target": self.node_name,
+            "datapoints":[
+                [self.generate_datapoint(self.data, time_range), self.timestamp]
+            ]
+        }
 
+        return point
+    
+    @staticmethod
+    def generate_datapoint(data:dict, time_range:int) -> int:
+        """
+        generate point data by self.data
+        """
+        time = pendulum.now().int_timestamp
+        
+        if time - data["timestamp"] > time_range:
+            return INVALID
+            
+        else:
+            if int(data["fields"].get("status", -1)) == 1:
+                return RUN
+            elif int(data["fields"].get("status", -1)) == 0:
+                return STOP
+            elif int(data["fields"].get("status", -1)) == -1:
+                return UNKNOWN
+            else:
+                return UNDEFINED
+        
 
 """
 Quest sample

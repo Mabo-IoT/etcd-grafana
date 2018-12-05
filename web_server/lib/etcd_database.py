@@ -1,7 +1,7 @@
 import logging
 import requests
 
-from etcd import Client
+from etcd import Client,EtcdResult
 
 
 log = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ class EtcdWrapper:
         except Exception as e:
             log.error("\n%s", e)
 
-    def read(self, key:str) -> str:
+    def read(self, key:str) -> EtcdResult:
         try:
             return self.client.read(key)
         except Exception as e:
